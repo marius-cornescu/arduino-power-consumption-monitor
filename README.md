@@ -1,2 +1,9 @@
-# arduino-power-consumption-monitor
-Smart power consumption monitor using an D1 mini and current sensors
+# Smart Power-Consumption-Monitor
+
+Monitor the power consumption of appliances, and publish the data to MQTT
+
+
+
+https://diyi0t.com/increase-the-number-of-analog-inputs-with-an-analog-multiplexer/
+
+
