@@ -9,7 +9,7 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define DEBUG
-#define DEBUG_V
+//#define DEBUG_V
 #define UseCOMM
 
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -78,7 +78,7 @@ void wifi_Setup() {
 #ifdef DEBUG
   Serial.println();
   Serial.print("Connecting to ");
-  Serial.println(ssid);
+  Serial.print(ssid);
 #endif
 
   WiFi.begin(ssid, pass);
@@ -102,11 +102,9 @@ void wifi_Setup() {
 void loop() {
   digitalWrite(LED_INDICATOR_PIN, LOW);
   //
-  comm_ActIfReceivedMessage();
+  mqtt_MaintainConnection();
   //
-#ifdef DEBUG
-  //Serial.print(".");
-#endif
+  comm_ActIfReceivedMessage();
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   delay(1 * TIME_TICK);
@@ -114,10 +112,19 @@ void loop() {
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
 void publishVoltageDataToMqtt() {
-  _publishAnalogPinData();
+  _printVoltageData();
+  for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
+    char port_topic[] = "home/pcm/unit-A/port/";
+    port_topic[21] = pinId + byte('0');
+    port_topic[22] = '\0';
+//#ifdef DEBUG
+    Serial.print(port_topic);Serial.print(" => ");Serial.println(voltage[pinId]);
+//#endif
+    mqtt_PublishInt(port_topic, voltage[pinId]);
+  }
 }
 //==================================================================================================
-void _printAnalogPinData() {
+void _printVoltageData() {
 #ifdef DEBUG_V
   Serial.println("");
   Serial.println("---------------------------------------");

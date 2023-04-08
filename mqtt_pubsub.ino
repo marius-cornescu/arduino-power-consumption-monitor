@@ -52,7 +52,7 @@ void mqtt_Reconnect() {
       Serial.println("connected");
 #endif
       // Subscribe
-      mqttClient.subscribe("esp32/output");
+      mqttClient.subscribe("home/pcm/output");
     } else {
 #ifdef DEBUG
       Serial.print("failed, rc=");
@@ -65,7 +65,7 @@ void mqtt_Reconnect() {
   }
 }
 //==================================================================================================
-void mqtt_PublishInt(const char* topic, byte value) {
+void mqtt_PublishInt(const char* topic, int value) {
   // Convert the value to a char array
   char valueString[4];
   utoa((unsigned)value, valueString, 10);
