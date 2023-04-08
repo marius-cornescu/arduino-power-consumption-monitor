@@ -26,9 +26,9 @@ void mqtt_Setup() {
   mqttClient.setServer(mqtt_server, 1883);
   //mqttClient.setCallback(callback);
   //..............................
-  delay(TIME_TICK * 10);
+  delay(10 * TIME_TICK);
 #ifdef DEBUG
-  Serial.println(">>> Mqtt:Setup");
+  Serial.println("Mqtt:Setup <<<");
 #endif
 }
 //**************************************************************************************************
@@ -54,7 +54,7 @@ void mqtt_Reconnect() {
       Serial.print(mqttClient.state());
       Serial.println(" try again in 5 seconds");
       // Wait 5 seconds before retrying
-      delay(TIME_TICK * 500);
+      delay(500 * TIME_TICK);
     }
   }
 }

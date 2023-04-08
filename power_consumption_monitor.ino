@@ -9,6 +9,7 @@
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #define DEBUG
+//#define UseCOMM
 
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
@@ -22,6 +23,8 @@
 
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
+//
+const byte ANALOG_PIN_COUNT = 8;    // Arduino NANO has 8 analog pins
 //------------------------------------------------
 #ifdef DEBUG
 const byte TIME_TICK = 100;
@@ -38,8 +41,7 @@ const char pass[] = WIFI_PASSWORD;
 //= VARIABLES ======================================================================================
 WiFiClient espClient;
 
-int analogPin = A0;  // connected to analog pin 0 - +3.3V
-int val = 0;         // variable to store the value read
+int voltage[ANALOG_PIN_COUNT];
 
 //##################################################################################################
 //==================================================================================================
@@ -53,17 +55,18 @@ void setup() {
   Serial.println("Smart-PCM:Setup >>>");
 #endif
   //..............................
-    // initialize digital pin LED_INDICATOR_PIN as an output.
+  // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
-  //
-  pinMode(A0, INPUT);
   //..............................
+  //
   wifi_Setup();
   //
   mqtt_Setup();
+  //
+  comm_Setup();
   //..............................
 #ifdef DEBUG
-  Serial.println(">>> Smart-PCM:Setup");
+  Serial.println("Smart-PCM:Setup <<<");
 #endif
 }
 //**************************************************************************************************
@@ -71,40 +74,36 @@ void wifi_Setup() {
   delay(TIME_TICK);
   WiFi.hostname(host_name);
   // We start by connecting to a WiFi network
+#ifdef DEBUG
   Serial.println();
   Serial.print("Connecting to ");
   Serial.println(ssid);
+#endif
 
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED) {
-    delay(500);
+    delay(50 * TIME_TICK);
+#ifdef DEBUG
     Serial.print(".");
+#endif
   }
 
+#ifdef DEBUG
   Serial.println("");
   Serial.println("WiFi connected");
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
+#endif
 }
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 void loop() {
   digitalWrite(LED_INDICATOR_PIN, LOW);
   //
-  int x = analogRead(A0);
-  Serial.print("Analog value : ");
-  Serial.println(x);
+  comm_ActIfActivity();
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  //
   delay(10 * TIME_TICK);
-}
-//==================================================================================================
-bool shouldSendRfCode() {
-  return true;
-}
-//==================================================================================================
-void transmitRfCode(unsigned long code, unsigned int code_length) {
 }
 //==================================================================================================
