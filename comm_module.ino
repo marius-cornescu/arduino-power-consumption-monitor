@@ -30,16 +30,25 @@ void comm_Setup() {
 }
 //**************************************************************************************************
 //==================================================================================================
-void comm_ActIfActivity() {
+void comm_ActIfReceivedMessage() {
 #ifdef UseCOMM
-  // NO MESSAGES - I'm not listening
+  if (commProto.hasMessageInInboxThenReadMessage()) {
+    commProto.actOnMessage();
+    if (commProto.isHaveToPublish()) {
+      __actOnPartnerDataChanged();
+    }
+  }
 #endif
 }
 //==================================================================================================
-void comm_actOnNewData() {
+void comm_ActOnNewDataToSend() {
 #ifdef UseCOMM
   // NOT SENDING MESSAGES - I'm only listening
 #endif
+}
+//==================================================================================================
+void __actOnPartnerDataChanged() {
+  // TODO: publish to MQTT
 }
 //==================================================================================================
 bool processReceivedMessage(const char* message) {

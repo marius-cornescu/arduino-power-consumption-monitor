@@ -15,6 +15,12 @@
 
 #define SEC 1000  // 1 second
 
+#ifdef DEBUG
+#define TIME_TICK 100
+#else
+#define TIME_TICK 10
+#endif
+
 //= INCLUDES =======================================================================================
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
@@ -25,12 +31,6 @@
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //
 const byte ANALOG_PIN_COUNT = 8;    // Arduino NANO has 8 analog pins
-//------------------------------------------------
-#ifdef DEBUG
-const byte TIME_TICK = 100;
-#else
-const byte TIME_TICK = 10;
-#endif
 //------------------------------------------------
 const char host_name[] = HOST_NAME;
 
@@ -101,7 +101,7 @@ void wifi_Setup() {
 void loop() {
   digitalWrite(LED_INDICATOR_PIN, LOW);
   //
-  comm_ActIfActivity();
+  comm_ActIfReceivedMessage();
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   delay(10 * TIME_TICK);
