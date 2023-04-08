@@ -8,8 +8,9 @@
 //
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#define DEBUG
-//#define UseCOMM
+//#define DEBUG
+#define DEBUG_V
+#define UseCOMM
 
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
 
@@ -30,7 +31,7 @@
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //
-const byte ANALOG_PIN_COUNT = 8;    // Arduino NANO has 8 analog pins
+const byte ANALOG_PIN_COUNT = 8;  // Arduino NANO has 8 analog pins
 //------------------------------------------------
 const char host_name[] = HOST_NAME;
 
@@ -91,8 +92,8 @@ void wifi_Setup() {
 
 #ifdef DEBUG
   Serial.println("");
-  Serial.println("WiFi connected");
-  Serial.println("IP address: ");
+  Serial.print("WiFi connected | ");
+  Serial.print("IP address: ");
   Serial.println(WiFi.localIP());
 #endif
 }
@@ -103,7 +104,32 @@ void loop() {
   //
   comm_ActIfReceivedMessage();
   //
+#ifdef DEBUG
+  //Serial.print(".");
+#endif
+  //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  delay(10 * TIME_TICK);
+  delay(1 * TIME_TICK);
+}
+//OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
+//==================================================================================================
+void publishVoltageDataToMqtt() {
+  _publishAnalogPinData();
+}
+//==================================================================================================
+void _printAnalogPinData() {
+#ifdef DEBUG_V
+  Serial.println("");
+  Serial.println("---------------------------------------");
+  for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
+    Serial.print("Pin [A");
+    Serial.print(pinId);
+    Serial.print("] = ");
+    Serial.print(voltage[pinId]);
+    Serial.print(" mV | ");
+  }
+  Serial.println("");
+  Serial.println("---------------------------------------");
+#endif
 }
 //==================================================================================================

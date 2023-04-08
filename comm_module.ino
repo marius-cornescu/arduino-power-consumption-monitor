@@ -6,7 +6,7 @@
 //= CONSTANTS ======================================================================================
 //----------------------------------
 bool processReceivedMessage(const char* message);
-const char* prepareMessageToSend();
+void prepareMessageToSend(char* message);
 
 //= VARIABLES ======================================================================================
 RtznCommProtocol commProto("PCM-MASTER", &processReceivedMessage, &prepareMessageToSend);
@@ -48,25 +48,31 @@ void comm_ActOnNewDataToSend() {
 }
 //==================================================================================================
 void __actOnPartnerDataChanged() {
-  // TODO: publish to MQTT
+  publishVoltageDataToMqtt();
 }
 //==================================================================================================
 bool processReceivedMessage(const char* message) {
   bool haveToPublish = false;
 #ifdef UseCOMM
-  //------------------------------------
-  // NO LISTENING
-  //------------------------------------
+  int CHAR_COUNT = 2;
+  for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
+    byte byte1 = message[pinId * CHAR_COUNT] - byte('0');
+    byte byte2 = message[pinId * CHAR_COUNT + 1] - byte('0');
+    voltage[pinId] = byte1 * 100 + byte2;
+  }
+  haveToPublish = true;
+#ifdef DEBUG
+  Serial.println(message);
+#endif
 #endif
   return haveToPublish;
 }
 //==================================================================================================
-const char* prepareMessageToSend() {
+void prepareMessageToSend(char* message) {
 #ifdef UseCOMM
   //------------------------------------
   // NO PUBLISHING
   //------------------------------------
 #endif
-  return new char[0];
 }
 //==================================================================================================
