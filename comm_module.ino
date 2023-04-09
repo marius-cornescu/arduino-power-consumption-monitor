@@ -1,15 +1,15 @@
 //= DEFINES ========================================================================================
 
 //= INCLUDES =======================================================================================
-#include "Artizan-CommProtocol.h"
+#include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
-//----------------------------------
-bool processReceivedMessage(const char* message);
-void prepareMessageToSend(char* message);
+const int PAYLOAD_SIZE = ANALOG_PIN_COUNT * 4 + 1;
 
 //= VARIABLES ======================================================================================
-RtznCommProtocol commProto("PCM-MASTER", &processReceivedMessage, &prepareMessageToSend);
+SerialTransfer commProto;
+
+char payload[PAYLOAD_SIZE] = "00000000000000000000000000000000";
 
 //==================================================================================================
 //**************************************************************************************************
@@ -21,7 +21,7 @@ void comm_Setup() {
   //..............................
   // Open serial communications and wait for port to open
   Serial.begin(115200);
-  while (!Serial) { ; }
+  commProto.begin(Serial);
   //..............................
 #ifdef DEBUG
   Serial.println("COMM:Setup <<<");
@@ -32,47 +32,31 @@ void comm_Setup() {
 //==================================================================================================
 void comm_ActIfReceivedMessage() {
 #ifdef UseCOMM
-  if (commProto.hasMessageInInboxThenReadMessage()) {
-    commProto.actOnMessage();
-    if (commProto.isHaveToPublish()) {
-      __actOnPartnerDataChanged();
-    }
-  }
-#endif
-}
-//==================================================================================================
-void comm_ActOnNewDataToSend() {
-#ifdef UseCOMM
-  // NOT SENDING MESSAGES - I'm only listening
-#endif
-}
-//==================================================================================================
-void __actOnPartnerDataChanged() {
-  publishVoltageDataToMqtt();
-}
-//==================================================================================================
-bool processReceivedMessage(const char* message) {
-  bool haveToPublish = false;
-#ifdef UseCOMM
-  int CHAR_COUNT = 2;
-  for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
-    byte byte1 = message[pinId * CHAR_COUNT] - byte('0');
-    byte byte2 = message[pinId * CHAR_COUNT + 1] - byte('0');
-    voltage[pinId] = byte1 * 100 + byte2;
+  if (commProto.available()) {
+    // use this variable to keep track of how many
+    // bytes we've processed from the receive buffer
+    uint16_t recSize = 0;
+
+    memset(payload, 48, PAYLOAD_SIZE);  // all 'zero' character
+    payload[PAYLOAD_SIZE - 1] = '\0';
+
+    commProto.rxObj(payload);
+
 #ifdef DEBUG
-    Serial.print(voltage[pinId]);Serial.print(" => ");Serial.print(byte1);Serial.print(" | ");Serial.print(byte2);Serial.println();
+    Serial.println();
+    Serial.println(payload);
+    Serial.println();
 #endif
+
+    for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
+      byte int_as_char_size = 4;
+      char valueString[int_as_char_size + 1];
+      memcpy(valueString, &payload[pinId * int_as_char_size], int_as_char_size);
+      voltage[pinId] = atoi(valueString);
+    }
+
+    publishVoltageDataToMqtt();
   }
-  haveToPublish = true;
-#endif
-  return haveToPublish;
-}
-//==================================================================================================
-void prepareMessageToSend(char* message) {
-#ifdef UseCOMM
-  //------------------------------------
-  // NO PUBLISHING
-  //------------------------------------
 #endif
 }
 //==================================================================================================

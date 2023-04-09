@@ -10,6 +10,7 @@
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define DEBUG
 //#define DEBUG_V
+//#define DEBUG_MQTT
 #define UseCOMM
 
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
@@ -42,17 +43,16 @@ const char pass[] = WIFI_PASSWORD;
 //= VARIABLES ======================================================================================
 WiFiClient espClient;
 
-int voltage[ANALOG_PIN_COUNT];
+static int voltage[ANALOG_PIN_COUNT];
 
 //##################################################################################################
 //==================================================================================================
 //**************************************************************************************************
 void setup() {
-  // Open serial communications and wait for port to open
+#ifdef DEBUG
+  // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) { ; }
-  //..............................
-#ifdef DEBUG
   Serial.println("Smart-PCM:Setup >>>");
 #endif
   //..............................
@@ -117,7 +117,7 @@ void publishVoltageDataToMqtt() {
     char port_topic[] = "home/pcm/unit-A/port/";
     port_topic[21] = pinId + byte('0');
     port_topic[22] = '\0';
-#ifdef DEBUG
+#ifdef DEBUG_MQTT
     Serial.print(port_topic);Serial.print(" => ");Serial.println(voltage[pinId]);
 #endif
     mqtt_PublishInt(port_topic, voltage[pinId]);
