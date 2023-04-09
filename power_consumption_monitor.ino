@@ -117,9 +117,9 @@ void publishVoltageDataToMqtt() {
     char port_topic[] = "home/pcm/unit-A/port/";
     port_topic[21] = pinId + byte('0');
     port_topic[22] = '\0';
-//#ifdef DEBUG
+#ifdef DEBUG
     Serial.print(port_topic);Serial.print(" => ");Serial.println(voltage[pinId]);
-//#endif
+#endif
     mqtt_PublishInt(port_topic, voltage[pinId]);
   }
 }

@@ -59,11 +59,11 @@ bool processReceivedMessage(const char* message) {
     byte byte1 = message[pinId * CHAR_COUNT] - byte('0');
     byte byte2 = message[pinId * CHAR_COUNT + 1] - byte('0');
     voltage[pinId] = byte1 * 100 + byte2;
+#ifdef DEBUG
+    Serial.print(voltage[pinId]);Serial.print(" => ");Serial.print(byte1);Serial.print(" | ");Serial.print(byte2);Serial.println();
+#endif
   }
   haveToPublish = true;
-#ifdef DEBUG
-  Serial.println(message);
-#endif
 #endif
   return haveToPublish;
 }
