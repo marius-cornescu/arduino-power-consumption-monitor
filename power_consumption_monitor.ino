@@ -18,7 +18,7 @@
 #define SEC 1000  // 1 second
 
 #ifdef DEBUG
-#define TIME_TICK 100
+#define TIME_TICK 40
 #else
 #define TIME_TICK 10
 #endif
@@ -107,7 +107,7 @@ void loop() {
   comm_ActIfReceivedMessage();
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
-  delay(1 * TIME_TICK);
+  delay(100 * TIME_TICK);
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 //==================================================================================================
