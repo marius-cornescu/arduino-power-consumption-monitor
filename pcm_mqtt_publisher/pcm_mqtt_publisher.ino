@@ -24,8 +24,6 @@
 
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
-//
-const byte ANALOG_PIN_COUNT = 8;  // Arduino NANO has 8 analog pins
 //------------------------------------------------
 const char host_name[] = HOST_NAME;
 
@@ -36,7 +34,9 @@ const char pass[] = WIFI_PASSWORD;
 //= VARIABLES ======================================================================================
 WiFiClient espClient;
 
-static int voltage[ANALOG_PIN_COUNT];
+static unsigned int voltage[ANALOG_PIN_COUNT];
+
+unsigned int voltage_supply;
 
 //##################################################################################################
 //==================================================================================================
@@ -97,7 +97,9 @@ void loop() {
   //
   mqtt_MaintainConnection();
   //
-  comm_ActIfReceivedMessage();
+  if (comm_ActIfReceivedMessage()) {
+    publishVoltageDataToMqtt();
+  }
   //
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   delay(100 * TIME_TICK);
@@ -111,11 +113,16 @@ void publishVoltageDataToMqtt() {
     port_topic[21] = pinId + byte('0');
     port_topic[22] = '\0';
 #ifdef DEBUG_MQTT
-    Serial.print(port_topic);Serial.print(" => ");Serial.println(voltage[pinId]);
+    Serial.print(port_topic);
+    Serial.print(" => ");
+    Serial.println(voltage[pinId]);
 #endif
     mqtt_PublishInt(port_topic, voltage[pinId]);
   }
+  //
+  mqtt_PublishInt("home/pcm/unit-A/Vcc", voltage_supply);
 }
+//==================================================================================================
 //==================================================================================================
 void _printVoltageData() {
 #ifdef DEBUG_V
@@ -128,7 +135,10 @@ void _printVoltageData() {
     Serial.print(voltage[pinId]);
     Serial.print(" mV | ");
   }
-  Serial.println("");
+  Serial.print("Vcc = ");
+  Serial.print(voltage_supply);
+  Serial.print(" mV");
+  Serial.println();
   Serial.println("---------------------------------------");
 #endif
 }

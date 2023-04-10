@@ -11,9 +11,9 @@
 //
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#define DEBUG
+//#define DEBUG
 //#define DEBUG_VCC
-#define DEBUG_V
+//#define DEBUG_V
 #define UseCOMM
 
 //= INCLUDES =======================================================================================
@@ -24,8 +24,8 @@
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
 //------------------------------------------------
 const float OPERATING_VOLTAGE = 5.0;
-const byte ANALOG_PIN_COUNT = 8;  // Arduino NANO has 8 analog pins
 //
+const byte MEASUREMENT_COUNT = 5;
 //------------------------------------------------
 
 //= VARIABLES ======================================================================================
@@ -78,7 +78,7 @@ void loop() {
   digitalWrite(LED_INDICATOR_PIN, HIGH);
   //..............................
   //
-  _readAverageVoltagesOnAnalogPins(5);
+  _readAverageVoltagesOnAnalogPins(MEASUREMENT_COUNT);
   //
   comm_ActOnNewDataToSend();
   //..............................

@@ -4,12 +4,12 @@
 #include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
-const int PAYLOAD_SIZE = ANALOG_PIN_COUNT * 4 + 1;
+
 
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
-char payload[PAYLOAD_SIZE] = "00000000000000000000000000000000";
+char payload[PAYLOAD_SIZE];
 
 //==================================================================================================
 //**************************************************************************************************
@@ -30,33 +30,41 @@ void comm_Setup() {
 }
 //**************************************************************************************************
 //==================================================================================================
-void comm_ActIfReceivedMessage() {
+bool comm_ActIfReceivedMessage() {
+  bool hasUpdate = false;
 #ifdef UseCOMM
   if (commProto.available()) {
-    // use this variable to keep track of how many
-    // bytes we've processed from the receive buffer
-    uint16_t recSize = 0;
-
-    memset(payload, 48, PAYLOAD_SIZE);  // all 'zero' character
-    payload[PAYLOAD_SIZE - 1] = '\0';
-
+    memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
+    payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
+    //
     commProto.rxObj(payload);
-
-#ifdef DEBUG
-    Serial.println();
-    Serial.println(payload);
-    Serial.println();
-#endif
-
-    for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
-      byte int_as_char_size = 4;
-      char valueString[int_as_char_size + 1];
-      memcpy(valueString, &payload[pinId * int_as_char_size], int_as_char_size);
-      voltage[pinId] = atoi(valueString);
-    }
-
-    publishVoltageDataToMqtt();
+    //
+    _printPayloadIfDebug();
+    //
+    _payload_To_VoltageData();
   }
+#endif
+  return hasUpdate;
+}
+//==================================================================================================
+void _payload_To_VoltageData() {
+  char valueString[INT_AS_CHAR_SIZE + 1];
+  for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
+    memcpy(valueString, &payload[pinId * INT_AS_CHAR_SIZE], INT_AS_CHAR_SIZE);
+    voltage[pinId] = atoi(valueString);
+  }
+  // read Vcc from payload
+  memcpy(valueString, &payload[ANALOG_PIN_COUNT * INT_AS_CHAR_SIZE], INT_AS_CHAR_SIZE);
+  voltage_supply = atoi(valueString);
+}
+//==================================================================================================
+void _printPayloadIfDebug() {
+#ifdef DEBUG
+  Serial.println();
+  Serial.print("payload = [");
+  Serial.print(payload);
+  Serial.print("]");
+  Serial.println();
 #endif
 }
 //==================================================================================================

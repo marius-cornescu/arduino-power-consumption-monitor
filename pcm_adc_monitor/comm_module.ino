@@ -4,14 +4,12 @@
 #include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
-//----------------------------------
 
-const int PAYLOAD_SIZE = ANALOG_PIN_COUNT * 4 + 1;
 
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
-char payload[PAYLOAD_SIZE] = "00000000000000000000000000000000";
+char payload[PAYLOAD_SIZE];
 
 //==================================================================================================
 //**************************************************************************************************
@@ -35,25 +33,35 @@ void comm_Setup() {
 //==================================================================================================
 void comm_ActOnNewDataToSend() {
 #ifdef UseCOMM
-  memset(payload, 48, PAYLOAD_SIZE);  // all 'zero' character
-  payload[PAYLOAD_SIZE - 1] = '\0';
-
+  memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
+  payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
+  //
+  _voltageData_To_Payload();
+  //
+  _printPayloadIfDebug();
+  //
+  commProto.sendDatum(payload);
+#endif
+}
+//==================================================================================================
+void _voltageData_To_Payload() {
+  char valueString[INT_AS_CHAR_SIZE + 1];
   for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
-    byte int_as_char_size = 4;
-    char valueString[int_as_char_size + 1];
     sprintf(valueString, "%04d", voltage[pinId]);
-    memcpy(&payload[pinId * int_as_char_size], valueString, int_as_char_size);
+    memcpy(&payload[pinId * INT_AS_CHAR_SIZE], valueString, INT_AS_CHAR_SIZE);
   }
-
+  // add Vcc to payload
+  sprintf(valueString, "%04d", voltage_supply);
+  memcpy(&payload[ANALOG_PIN_COUNT * INT_AS_CHAR_SIZE], valueString, INT_AS_CHAR_SIZE);
+}
+//==================================================================================================
+void _printPayloadIfDebug() {
 #ifdef DEBUG
   Serial.println();
   Serial.print("payload = [");
   Serial.print(payload);
   Serial.print("]");
   Serial.println();
-#endif
-
-  commProto.sendDatum(payload);
 #endif
 }
 //==================================================================================================
