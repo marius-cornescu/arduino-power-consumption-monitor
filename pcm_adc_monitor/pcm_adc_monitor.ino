@@ -11,20 +11,13 @@
 //
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-//#define DEBUG
+#define DEBUG
 //#define DEBUG_VCC
-//#define DEBUG_V
+#define DEBUG_V
 #define UseCOMM
 
-#define SEC 1000  // 1 second
-
-#ifdef DEBUG
-#define TIME_TICK 40
-#else
-#define TIME_TICK 10
-#endif
-
 //= INCLUDES =======================================================================================
+#include "Common.h"
 #include <Wire.h>
 
 //= CONSTANTS ======================================================================================
@@ -39,6 +32,7 @@ const byte ANALOG_PIN_COUNT = 8;  // Arduino NANO has 8 analog pins
 byte analog_pin[ANALOG_PIN_COUNT] = { A0, A1, A2, A3, A4, A5, A6, A7 };
 unsigned int voltage_instant[ANALOG_PIN_COUNT];
 static unsigned int voltage[ANALOG_PIN_COUNT];
+unsigned int voltage_supply;
 
 //##################################################################################################
 //==================================================================================================
@@ -55,6 +49,8 @@ void setup() {
   pinMode(LED_INDICATOR_PIN, OUTPUT);
   //
   adc_Setup();
+  //
+  delay(1000 * TIME_TICK);
   //..............................
 #ifdef DEBUG
   Serial.println("START-UP <<<");
@@ -135,6 +131,7 @@ float _computeVoltage(unsigned int raw_analog_value, int unit) {
   long raw_vcc = _readVcc();
   float supply_voltage = raw_vcc * (unit / 1000.0);
   float corrected_voltage = supply_voltage / OPERATING_VOLTAGE * raw_voltage;
+  voltage_supply = round(supply_voltage);
 
 #ifdef DEBUG_VCC
   Serial.print("Vcc = ");
@@ -157,7 +154,10 @@ void _printVoltageData() {
     Serial.print(voltage[pinId]);
     Serial.print(" mV | ");
   }
-  Serial.println("");
+  Serial.print("Vcc = ");
+  Serial.print(voltage_supply);
+  Serial.print(" mV");
+  Serial.println();
   Serial.println("---------------------------------------");
 #endif
 }
