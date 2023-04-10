@@ -42,6 +42,8 @@ bool comm_ActIfReceivedMessage() {
     _printPayloadIfDebug();
     //
     _payload_To_VoltageData();
+    //
+    hasUpdate = true;
   }
 #endif
   return hasUpdate;

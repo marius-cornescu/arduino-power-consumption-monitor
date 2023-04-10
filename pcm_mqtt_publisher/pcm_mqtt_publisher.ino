@@ -13,8 +13,6 @@
 //#define DEBUG_MQTT
 #define UseCOMM
 
-
-
 //= INCLUDES =======================================================================================
 #include "Common.h"
 #include "Secrets.h"
