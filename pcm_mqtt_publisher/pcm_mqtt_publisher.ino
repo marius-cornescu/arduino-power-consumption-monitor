@@ -106,6 +106,11 @@ void loop() {
 //==================================================================================================
 void publishVoltageDataToMqtt() {
   _printVoltageData();
+
+  if (mqtt_SkipPublish()) {
+    return;
+  }
+
   for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
     char port_topic[] = "home/pcm/unit-A/port/";
     port_topic[21] = pinId + byte('0');

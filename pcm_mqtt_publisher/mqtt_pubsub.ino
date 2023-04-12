@@ -70,9 +70,6 @@ void mqtt_Reconnect() {
 }
 //==================================================================================================
 void mqtt_PublishInt(const char* topic, int value) {
-  if (__SkipPublish()) {
-    return;
-  }
   // Convert the value to a char array
   char valueString[4];
   utoa((unsigned)value, valueString, 10);
@@ -80,9 +77,6 @@ void mqtt_PublishInt(const char* topic, int value) {
 }
 //==================================================================================================
 void mqtt_PublishFloat(const char* topic, float value) {
-  if (__SkipPublish()) {
-    return;
-  }
   // Convert the value to a char array
   char valueString[8];
   dtostrf(value, 1, 2, valueString);
@@ -90,9 +84,6 @@ void mqtt_PublishFloat(const char* topic, float value) {
 }
 //==================================================================================================
 void mqtt_PublishString(const char* topic, const char* value) {
-  if (__SkipPublish()) {
-    return;
-  }
   mqttClient.publish(topic, value);
 }
 //==================================================================================================
@@ -105,7 +96,7 @@ bool __SkipConnect() {
   }
 }
 //==================================================================================================
-bool __SkipPublish() {
+bool mqtt_SkipPublish() {
   if (millis() - lastMqttPublish <= PUBLISH_COLLDOWN_TIME) {
     return true;
   } else {
