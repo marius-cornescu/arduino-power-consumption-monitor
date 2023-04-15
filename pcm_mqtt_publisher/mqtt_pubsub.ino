@@ -7,7 +7,6 @@
 // MQTT Broker IP address, example:
 const char* mqtt_server = MQTT_BROKER_ADDRESS;
 
-unsigned long CONNECTION_COLLDOWN_TIME = 20 * SEC;  // value in milliseconds
 unsigned long PUBLISH_COLLDOWN_TIME = 5 * SEC;      // value in milliseconds
 
 //= VARIABLES ======================================================================================
@@ -34,10 +33,6 @@ void mqtt_Setup() {
 //**************************************************************************************************
 //==================================================================================================
 void mqtt_MaintainConnection() {
-  if (__SkipConnect()) {
-    return;
-  }
-
   if (!mqttClient.connected()) {
     mqtt_Reconnect();
   }
@@ -85,15 +80,6 @@ void mqtt_PublishFloat(const char* topic, float value) {
 //==================================================================================================
 void mqtt_PublishString(const char* topic, const char* value) {
   mqttClient.publish(topic, value);
-}
-//==================================================================================================
-bool __SkipConnect() {
-  if (millis() - lastMqttConnection <= CONNECTION_COLLDOWN_TIME) {
-    return true;
-  } else {
-    lastMqttConnection = millis();
-    return false;
-  }
 }
 //==================================================================================================
 bool mqtt_SkipPublish() {
