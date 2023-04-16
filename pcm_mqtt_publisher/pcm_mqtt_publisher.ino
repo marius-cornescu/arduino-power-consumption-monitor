@@ -15,6 +15,7 @@
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
+#include "CommCommon.h"
 #include "Secrets.h"
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
@@ -44,7 +45,7 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) { ; }
-  Serial.println("Smart-PCM:Setup >>>");
+  Serial.println("START-UP >>>");
 #endif
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
@@ -58,7 +59,7 @@ void setup() {
   comm_Setup();
   //..............................
 #ifdef DEBUG
-  Serial.println("Smart-PCM:Setup <<<");
+  Serial.println("START-UP <<<");
 #endif
 }
 //**************************************************************************************************

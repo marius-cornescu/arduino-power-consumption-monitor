@@ -1,6 +1,7 @@
 //= DEFINES ========================================================================================
 
 //= INCLUDES =======================================================================================
+#include "CommCommon.h"
 #include "SerialTransfer.h"
 
 //= CONSTANTS ======================================================================================
@@ -9,22 +10,20 @@
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
-char payload[PAYLOAD_SIZE];
-
 //==================================================================================================
 //**************************************************************************************************
 void comm_Setup() {
 #ifdef UseCOMM
 #ifdef DEBUG
-  Serial.println("COMM:Setup >>>");
+  Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
-  // Open serial communications and wait for port to open
+  // Open serial communications
   Serial.begin(115200);
   commProto.begin(Serial);
   //..............................
 #ifdef DEBUG
-  Serial.println("COMM:Setup <<<");
+  Serial.println(F("COMM:Setup <<<"));
 #endif
 #endif
 }
@@ -39,9 +38,11 @@ bool comm_ActIfReceivedMessage() {
     //
     commProto.rxObj(payload);
     //
-    _printPayloadIfDebug();
+    __printPayloadIfDebug();
     //
-    _payload_To_VoltageData();
+    _Payload_To_Data();
+    //
+    __printDataIfDebug();
     //
     hasUpdate = true;
   }
@@ -49,7 +50,7 @@ bool comm_ActIfReceivedMessage() {
   return hasUpdate;
 }
 //==================================================================================================
-void _payload_To_VoltageData() {
+void _Payload_To_Data() {
   char valueString[INT_AS_CHAR_SIZE + 1];
   for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
     memcpy(valueString, &payload[pinId * INT_AS_CHAR_SIZE], INT_AS_CHAR_SIZE);
@@ -60,11 +61,21 @@ void _payload_To_VoltageData() {
   voltage_supply = atoi(valueString);
 }
 //==================================================================================================
-void _printPayloadIfDebug() {
+void __printPayloadIfDebug() {
 #ifdef DEBUG
   Serial.println();
-  Serial.print("payload = [");
+  Serial.print(F("payload = ["));
   Serial.print(payload);
+  Serial.print("]");
+  Serial.println();
+#endif
+}
+//==================================================================================================
+void __printDataIfDebug() {
+#ifdef DEBUG
+  Serial.println();
+  Serial.print(F("voltage_supply = ["));
+  Serial.print(voltage_supply);
   Serial.print("]");
   Serial.println();
 #endif
