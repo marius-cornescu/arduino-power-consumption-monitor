@@ -19,7 +19,6 @@
 //= INCLUDES =======================================================================================
 #include "Common.h"
 #include "CommCommon.h"
-#include <Wire.h>
 
 //= CONSTANTS ======================================================================================
 const byte LED_INDICATOR_PIN = LED_BUILTIN;  // choose the pin for the LED // D13
