@@ -6,6 +6,9 @@
   D1 -> RX
   D0 -> TX
   -------------------------------
+  Sketch uses 7720 bytes (25%) of program storage space. Maximum is 30720 bytes.
+  Global variables use 943 bytes (46%) of dynamic memory, leaving 1105 bytes for local variables. Maximum is 2048 bytes.
+  -------------------------------
 */
 //= DEFINES ========================================================================================
 //
@@ -14,7 +17,7 @@
 //#define DEBUG
 //#define DEBUG_VCC
 //#define DEBUG_V
-#define UseCOMM
+#define UseCOMMPro
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
@@ -42,7 +45,7 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) { ; }
-  Serial.println("START-UP >>>");
+  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
@@ -53,7 +56,7 @@ void setup() {
   delay(1000 * TIME_TICK);
   //..............................
 #ifdef DEBUG
-  Serial.println("START-UP <<<");
+  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
 #endif
 }
 //**************************************************************************************************

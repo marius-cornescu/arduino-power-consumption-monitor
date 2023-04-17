@@ -1,4 +1,5 @@
 //= DEFINES ========================================================================================
+#ifdef UseCOMMPro
 
 //= INCLUDES =======================================================================================
 #include "CommCommon.h"
@@ -9,28 +10,30 @@
 //= VARIABLES ======================================================================================
 SerialTransfer commProto;
 
+#endif
 //==================================================================================================
 //**************************************************************************************************
 void comm_Setup() {
-#ifdef UseCOMM
+#ifdef UseCOMMPro
 #ifdef DEBUG
   Serial.println(F("COMM:Setup >>>"));
 #endif
   //..............................
-  // Open serial communications
+  // Open serial communications and wait for port to open
   Serial.begin(115200);
+  while (!Serial) { ; }
   commProto.begin(Serial);
   //..............................
+  delay(1 * TIME_TICK);
 #ifdef DEBUG
   Serial.println(F("COMM:Setup <<<"));
 #endif
-  delay(50 * TIME_TICK);
 #endif
 }
 //**************************************************************************************************
 //==================================================================================================
 void comm_ActOnNewDataToSend() {
-#ifdef UseCOMM
+#ifdef UseCOMMPro
   memset(payload, '0', PAYLOAD_SIZE);  // all 'zero' character
   payload[PAYLOAD_SIZE - 1] = '\0';    // end with array terminator
   //
@@ -41,6 +44,16 @@ void comm_ActOnNewDataToSend() {
   commProto.sendDatum(payload);
 #endif
 }
+//==================================================================================================
+//==================================================================================================
+bool comm_ActIfReceivedMessage() {
+  bool hasUpdate = false;
+#ifdef UseCOMMPro
+#endif
+  return hasUpdate;
+}
+//==================================================================================================
+#ifdef UseCOMMPro
 //==================================================================================================
 void _Data_To_Payload() {
   char valueString[INT_AS_CHAR_SIZE + 1];
@@ -53,6 +66,10 @@ void _Data_To_Payload() {
   memcpy(&payload[ANALOG_PIN_COUNT * INT_AS_CHAR_SIZE], valueString, INT_AS_CHAR_SIZE);
 }
 //==================================================================================================
+//==================================================================================================
+void _Payload_To_Data() {
+}
+//==================================================================================================
 void __printPayloadIfDebug() {
 #ifdef DEBUG
   Serial.println();
@@ -62,4 +79,16 @@ void __printPayloadIfDebug() {
   Serial.println();
 #endif
 }
+//==================================================================================================
+void __printDataIfDebug() {
+#ifdef DEBUG
+  Serial.println();
+  Serial.print(F("voltage_supply = ["));
+  Serial.print(voltage_supply);
+  Serial.print("]");
+  Serial.println();
+#endif
+}
+//==================================================================================================
+#endif
 //==================================================================================================

@@ -3,6 +3,11 @@
   -------------------------------
   -------------------------------
   -------------------------------
+  -------------------------------
+  Variables and constants in RAM (global, static), used 30004 / 80192 bytes (37%)
+  Instruction RAM (IRAM_ATTR, ICACHE_RAM_ATTR), used 61115 / 65536 bytes (93%)
+  Code in flash (default, ICACHE_FLASH_ATTR), used 253464 / 1048576 bytes (24%)
+  -------------------------------
 */
 //= DEFINES ========================================================================================
 //
@@ -11,7 +16,7 @@
 //#define DEBUG
 //#define DEBUG_V
 //#define DEBUG_MQTT
-#define UseCOMM
+#define UseCOMMPro
 
 //= INCLUDES =======================================================================================
 #include "Common.h"
@@ -66,6 +71,7 @@ void setup() {
 void wifi_Setup() {
   delay(TIME_TICK);
   WiFi.hostname(host_name);
+  WiFi.setOutputPower(0); // Sets WiFi RF power output to lowest level, lowest RF power usage
   // We start by connecting to a WiFi network
 #ifdef DEBUG
   Serial.println();
