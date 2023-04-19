@@ -15,6 +15,7 @@ PubSubClient mqttClient(espClient);
 unsigned long lastMqttConnection = 0;
 unsigned long lastMqttPublish = 0;
 
+//##################################################################################################
 //==================================================================================================
 //**************************************************************************************************
 void mqtt_Setup() {
@@ -23,7 +24,7 @@ void mqtt_Setup() {
 #endif
   //..............................
   mqttClient.setServer(mqtt_server, 1883);
-  //mqttClient.setCallback(callback);
+  mqttClient.setCallback(mqtt_Callback);
   //..............................
   delay(10 * TIME_TICK);
 #ifdef DEBUG
@@ -51,7 +52,7 @@ void mqtt_Reconnect() {
       Serial.println("connected");
 #endif
       // Subscribe
-      mqttClient.subscribe("home/pcm/command");
+      mqttClient.subscribe(SUBSCRIBE_TOPIC);
     } else {
 #ifdef DEBUG
       Serial.print("failed, rc=");
@@ -62,6 +63,35 @@ void mqtt_Reconnect() {
       delay(500 * TIME_TICK);
     }
   }
+}
+//==================================================================================================
+void mqtt_Callback(char* topic, byte* message, unsigned int length) {
+  // Serial.print("Message arrived on topic: ");
+  // Serial.print(topic);
+  // Serial.print(". Message: ");
+  // String messageTemp;
+  
+  // for (int i = 0; i < length; i++) {
+  //   Serial.print((char)message[i]);
+  //   messageTemp += (char)message[i];
+  // }
+  // Serial.println();
+
+  // // Feel free to add more if statements to control more GPIOs with MQTT
+
+  // // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // // Changes the output state according to the message
+  // if (String(topic) == SUBSCRIBE_TOPIC) {
+  //   Serial.print("Changing output to ");
+  //   if(messageTemp == "on"){
+  //     Serial.println("on");
+  //     digitalWrite(LED_INDICATOR_PIN, HIGH);
+  //   }
+  //   else if(messageTemp == "off"){
+  //     Serial.println("off");
+  //     digitalWrite(LED_INDICATOR_PIN, LOW);
+  //   }
+  // }
 }
 //==================================================================================================
 void mqtt_PublishInt(const char* topic, int value) {
@@ -82,12 +112,12 @@ void mqtt_PublishString(const char* topic, const char* value) {
   mqttClient.publish(topic, value);
 }
 //==================================================================================================
-bool mqtt_SkipPublish() {
-  if (millis() - lastMqttPublish <= PUBLISH_COLLDOWN_TIME) {
-    return true;
+bool mqtt_ShouldPublish() {
+  if (millis() - lastMqttPublish > PUBLISH_COLLDOWN_TIME) {
+    return false;
   } else {
     lastMqttPublish = millis();
-    return false;
+    return true;
   }
 }
 //==================================================================================================

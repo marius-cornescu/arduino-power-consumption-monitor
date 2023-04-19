@@ -11,6 +11,10 @@
 */
 //= DEFINES ========================================================================================
 //
+#define PUBLISH_PORT_TOPIC "home/pcm/unit-A/port/"
+#define PUBLISH_STATUS_TOPIC "home/pcm/unit-A/status"
+
+#define SUBSCRIBE_TOPIC "home/pcm/unit-A/command"
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define DEBUG
@@ -71,7 +75,7 @@ void setup() {
 void wifi_Setup() {
   delay(TIME_TICK);
   WiFi.hostname(host_name);
-  WiFi.setOutputPower(0); // Sets WiFi RF power output to lowest level, lowest RF power usage
+  WiFi.setOutputPower(0);  // Sets WiFi RF power output to lowest level, lowest RF power usage
   // We start by connecting to a WiFi network
 #ifdef DEBUG
   Serial.println();
@@ -98,15 +102,13 @@ void wifi_Setup() {
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 void loop() {
-  digitalWrite(LED_INDICATOR_PIN, LOW);
-  //
   mqtt_MaintainConnection();
   //
-  if (comm_ActIfReceivedMessage()) {
+  if (comm_ActIfReceivedMessage() && mqtt_ShouldPublish()) {
     publishVoltageDataToMqtt();
+    publishStatusDataToMqtt();
   }
   //
-  digitalWrite(LED_INDICATOR_PIN, HIGH);
   delay(100 * TIME_TICK);
 }
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
@@ -114,12 +116,10 @@ void loop() {
 void publishVoltageDataToMqtt() {
   _printVoltageData();
 
-  if (mqtt_SkipPublish()) {
-    return;
-  }
-
+  digitalWrite(LED_INDICATOR_PIN, LOW);
+  //
   for (byte pinId = 0; pinId < ANALOG_PIN_COUNT; pinId++) {
-    char port_topic[] = "home/pcm/unit-A/port/";
+    char port_topic[] = PUBLISH_PORT_TOPIC;
     port_topic[21] = pinId + byte('0');
     port_topic[22] = '\0';
 #ifdef DEBUG_MQTT
@@ -130,7 +130,23 @@ void publishVoltageDataToMqtt() {
     mqtt_PublishInt(port_topic, voltage[pinId]);
   }
   //
-  mqtt_PublishInt("home/pcm/unit-A/Vcc", voltage_supply);
+  char statusReport[4];
+  utoa((unsigned)voltage_supply, statusReport, 10);
+  mqtt_PublishString(PUBLISH_STATUS_TOPIC, statusReport);
+  //
+  digitalWrite(LED_INDICATOR_PIN, HIGH);
+}
+//==================================================================================================
+void publishStatusDataToMqtt() {
+  digitalWrite(LED_INDICATOR_PIN, LOW);
+  //
+  // could print sw version; params like PUBLISH_COLLDOWN_TIME
+  //
+  char statusReport[4];
+  utoa((unsigned)voltage_supply, statusReport, 10);
+  mqtt_PublishString(PUBLISH_STATUS_TOPIC, statusReport);
+  //
+  digitalWrite(LED_INDICATOR_PIN, HIGH);
 }
 //==================================================================================================
 //==================================================================================================
