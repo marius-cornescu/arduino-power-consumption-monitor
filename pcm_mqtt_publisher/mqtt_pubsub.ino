@@ -113,7 +113,7 @@ void mqtt_PublishString(const char* topic, const char* value) {
 }
 //==================================================================================================
 bool mqtt_ShouldPublish() {
-  if (millis() - lastMqttPublish > PUBLISH_COLLDOWN_TIME) {
+  if (millis() - lastMqttPublish <= PUBLISH_COLLDOWN_TIME) {
     return false;
   } else {
     lastMqttPublish = millis();

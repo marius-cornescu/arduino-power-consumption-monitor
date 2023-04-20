@@ -78,13 +78,13 @@ void adc_Setup() {
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO
 void loop() {
-  digitalWrite(LED_INDICATOR_PIN, HIGH);
-  //..............................
   //
   _readAverageVoltagesOnAnalogPins(MEASUREMENT_COUNT);
   //
+  digitalWrite(LED_INDICATOR_PIN, HIGH);
+  //
   comm_ActOnNewDataToSend();
-  //..............................
+  //
   digitalWrite(LED_INDICATOR_PIN, LOW);
   //
   delay(200 * TIME_TICK);
