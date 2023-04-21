@@ -11,7 +11,6 @@ unsigned long PUBLISH_COLLDOWN_TIME = 5 * SEC;      // value in milliseconds
 
 //= VARIABLES ======================================================================================
 PubSubClient mqttClient(espClient);
-
 unsigned long lastMqttConnection = 0;
 unsigned long lastMqttPublish = 0;
 
