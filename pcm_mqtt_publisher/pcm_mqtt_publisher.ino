@@ -14,7 +14,7 @@
 #define PUBLISH_PORT_TOPIC "home/pcm/unit-A/port/"
 #define PUBLISH_STATUS_TOPIC "home/pcm/unit-A/status"
 
-#define SUBSCRIBE_TOPIC "home/pcm/unit-A/command"
+#define SUBSCRIBE_TOPIC "home/pcm/unit-A/command/+"
 
 //~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 //#define DEBUG

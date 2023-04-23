@@ -11,7 +11,6 @@ unsigned long PUBLISH_COLLDOWN_TIME = 5 * SEC;      // value in milliseconds
 
 //= VARIABLES ======================================================================================
 PubSubClient mqttClient(espClient);
-unsigned long lastMqttConnection = 0;
 unsigned long lastMqttPublish = 0;
 
 //##################################################################################################
@@ -19,7 +18,7 @@ unsigned long lastMqttPublish = 0;
 //**************************************************************************************************
 void mqtt_Setup() {
 #ifdef DEBUG
-  Serial.println("Mqtt:Setup >>>");
+  Serial.println(F("Mqtt:Setup >>>"));
 #endif
   //..............................
   mqttClient.setServer(mqtt_server, 1883);
@@ -27,7 +26,7 @@ void mqtt_Setup() {
   //..............................
   delay(10 * TIME_TICK);
 #ifdef DEBUG
-  Serial.println("Mqtt:Setup <<<");
+  Serial.println(F("Mqtt:Setup <<<"));
 #endif
 }
 //**************************************************************************************************
@@ -43,7 +42,7 @@ void mqtt_Reconnect() {
   // Loop until we're reconnected
   while (!mqttClient.connected()) {
 #ifdef DEBUG
-    Serial.print("Attempting MQTT connection...");
+    Serial.print(F("Attempting MQTT connection..."));
 #endif
     // Attempt to connect
     if (mqttClient.connect(HOST_NAME)) {
@@ -56,7 +55,7 @@ void mqtt_Reconnect() {
 #ifdef DEBUG
       Serial.print("failed, rc=");
       Serial.print(mqttClient.state());
-      Serial.println(" try again in 5 seconds");
+      Serial.println(F(" try again in 5 seconds"));
 #endif
       // Wait 5 seconds before retrying
       delay(500 * TIME_TICK);
@@ -65,32 +64,30 @@ void mqtt_Reconnect() {
 }
 //==================================================================================================
 void mqtt_Callback(char* topic, byte* message, unsigned int length) {
-  // Serial.print("Message arrived on topic: ");
-  // Serial.print(topic);
-  // Serial.print(". Message: ");
-  // String messageTemp;
-  
-  // for (int i = 0; i < length; i++) {
-  //   Serial.print((char)message[i]);
-  //   messageTemp += (char)message[i];
-  // }
-  // Serial.println();
+#ifdef DEBUG
+  Serial.print(F("Message arrived on topic: "));
+  Serial.print(topic);
+  Serial.print(F(". Message: "));
+#endif
+  String messageTemp;
 
-  // // Feel free to add more if statements to control more GPIOs with MQTT
+  for (int i = 0; i < length; i++) {
+#ifdef DEBUG
+    Serial.print((char)message[i]);
+#endif
+    messageTemp += (char)message[i];
+  }
+#ifdef DEBUG
+  Serial.println();
+#endif
 
-  // // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
-  // // Changes the output state according to the message
-  // if (String(topic) == SUBSCRIBE_TOPIC) {
-  //   Serial.print("Changing output to ");
-  //   if(messageTemp == "on"){
-  //     Serial.println("on");
-  //     digitalWrite(LED_INDICATOR_PIN, HIGH);
-  //   }
-  //   else if(messageTemp == "off"){
-  //     Serial.println("off");
-  //     digitalWrite(LED_INDICATOR_PIN, LOW);
-  //   }
-  // }
+  if (String(topic).endsWith("/refreshSpeed")) {
+    byte newVentSpeed = messageTemp.toInt();
+    //
+  } else if (String(topic).endsWith("/actionCode")) {
+    byte newActionCode = messageTemp.toInt();
+    //onActionCodeChanged(newActionCode, true);
+  }
 }
 //==================================================================================================
 void mqtt_PublishInt(const char* topic, int value) {
