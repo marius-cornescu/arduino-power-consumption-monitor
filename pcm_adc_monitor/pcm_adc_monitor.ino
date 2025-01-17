@@ -45,8 +45,8 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) { ; }
-  Serial.println(F("START-UP >>>>>>>>>>>>>>>"));
 #endif
+  debugPrintln(F("START-UP >>>>>>>>>>>>>>>"));
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
@@ -55,9 +55,7 @@ void setup() {
   //
   delay(1000 * TIME_TICK);
   //..............................
-#ifdef DEBUG
-  Serial.println(F("START-UP <<<<<<<<<<<<<<<"));
-#endif
+  debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }
 //**************************************************************************************************
 void adc_Setup() {

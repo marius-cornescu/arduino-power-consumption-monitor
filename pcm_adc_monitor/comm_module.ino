@@ -15,9 +15,7 @@ SerialTransfer commProto;
 //**************************************************************************************************
 void comm_Setup() {
 #ifdef UseCOMMPro
-#ifdef DEBUG
-  Serial.println(F("COMM:Setup >>>"));
-#endif
+  debugPrintln(F("COMM:Setup >>>"));
   //..............................
   // Open serial communications and wait for port to open
   Serial.begin(115200);
@@ -25,9 +23,7 @@ void comm_Setup() {
   commProto.begin(Serial);
   //..............................
   delay(1 * TIME_TICK);
-#ifdef DEBUG
-  Serial.println(F("COMM:Setup <<<"));
-#endif
+  debugPrintln(F("COMM:Setup <<<"));
 #endif
 }
 //**************************************************************************************************

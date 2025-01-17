@@ -54,8 +54,8 @@ void setup() {
   // Open serial communications and wait for port to open:
   Serial.begin(115200);
   while (!Serial) { ; }
-  Serial.println("START-UP >>>>>");
 #endif
+  debugPrintln(F("START-UP >>>>>>>>>>>>>>>"));
   //..............................
   // initialize digital pin LED_INDICATOR_PIN as an output.
   pinMode(LED_INDICATOR_PIN, OUTPUT);
@@ -67,9 +67,7 @@ void setup() {
   //
   comm_Setup();
   //..............................
-#ifdef DEBUG
-  Serial.println("START-UP <<<<<");
-#endif
+  debugPrintln(F("START-UP <<<<<<<<<<<<<<<"));
 }
 //**************************************************************************************************
 void wifi_Setup() {
@@ -77,27 +75,21 @@ void wifi_Setup() {
   WiFi.hostname(host_name);
   WiFi.setOutputPower(0);  // Sets WiFi RF power output to lowest level, lowest RF power usage
   // We start by connecting to a WiFi network
-#ifdef DEBUG
-  Serial.println();
-  Serial.print("Connecting to ");
-  Serial.print(ssid);
-#endif
+  debugPrintln(F(""));
+  debugPrint(F("Connecting to "));
+  debugPrint(ssid);
 
   WiFi.begin(ssid, pass);
 
   while (WiFi.status() != WL_CONNECTED) {
     delay(50 * TIME_TICK);
-#ifdef DEBUG
-    Serial.print(".");
-#endif
+    debugPrint(F("."));
   }
 
-#ifdef DEBUG
-  Serial.println("");
-  Serial.print("WiFi connected | ");
-  Serial.print("IP address: ");
-  Serial.println(WiFi.localIP());
-#endif
+  debugPrintln(F(""));
+  debugPrint(F("WiFi connected | "));
+  debugPrint(F("IP address: "));
+  debugPrintln(WiFi.localIP());
 }
 //**************************************************************************************************
 //OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO

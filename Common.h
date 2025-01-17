@@ -2,12 +2,13 @@
 #ifndef _HEADERFILE_COMMON
 #define _HEADERFILE_COMMON
 //= CONSTANTS ======================================================================================
-#define SW_VERSION "2023.04.17"
+#define SW_VERSION "024.01.17"
 //------------------------------------------------
 //------------------------------------------------
 #define ARRAY_LEN(array) (sizeof(array) / sizeof(array[0]))
-
-#define SEC 1000L  // 1 second
+//------------------------------------------------
+#define SEC 1000L      // 1 second
+#define HOUR 3600000L  // 1 hour in milliseconds
 
 #ifdef DEBUG
 #define TIME_TICK 40L
@@ -16,5 +17,16 @@
 #endif
 
 //------------------------------------------------
+#ifdef DEBUG
+	#define debugPrint(x) Serial.print(x) //debug on
+	#define debugPrintln(x) Serial.println(x) //debug on
+#else
+	#define debugPrint(x) {;} //debug off
+	#define debugPrintln(x) {;} //debug off
+#endif
+//------------------------------------------------
+
+//------------------------------------------------
+
 //==================================================================================================
-#endif // _HEADERFILE_COMMON
+#endif  // _HEADERFILE_COMMON
