@@ -70,13 +70,13 @@ void mqtt_Callback(char* topic, byte* message, unsigned int length) {
   }
   debugPrintln();
 
-  if (String(topic).endsWith("/refreshSpeed")) {
-    byte newVentSpeed = messageTemp.toInt();
-    //
-  } else if (String(topic).endsWith("/actionCode")) {
-    byte newActionCode = messageTemp.toInt();
-    //onActionCodeChanged(newActionCode, true);
-  }
+  // if (String(topic).endsWith("/speed")) {
+  //   byte newVentSpeed = messageTemp.toInt();
+  //   onVentilationSpeedChanged(newVentSpeed, true);
+  // } else if (String(topic).endsWith("/actionCode")) {
+  //   byte newActionCode = messageTemp.toInt();
+  //   onActionCodeChanged(newActionCode, true);
+  // }
 }
 //==================================================================================================
 void mqtt_PublishInt(const char* topic, int value) {
